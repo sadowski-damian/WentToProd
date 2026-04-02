@@ -1,0 +1,6 @@
+services:
+  docker-test:
+    build: 
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: docker-test-container
