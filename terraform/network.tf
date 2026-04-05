@@ -110,7 +110,7 @@ resource "aws_security_group" "security-group-ec2" {
   name        = "security_group_ec2"
   description = "Security group rules for ec2"
   vpc_id      = aws_vpc.main.id
-  
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -118,10 +118,17 @@ resource "aws_security_group" "security-group-ec2" {
     protocol    = "-1"
   }
   ingress {
-    from_port = 8080
-    to_port = 8080
-    protocol = "tcp"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
     security_groups = [aws_security_group.security-group-lb.id, aws_security_group.security-group-prometheus.id]
+  }
+
+  ingress {
+    from_port       = 9100
+    to_port         = 9100
+    protocol        = "tcp"
+    security_groups = [aws_security_group.security-group-prometheus.id]
   }
 }
 
@@ -153,23 +160,47 @@ resource "aws_security_group" "security-group-lb" {
     protocol    = "tcp"
   }
 }
-/*
+
+# Security group for RDS
+# Inbound: We allow traffic from ec2 security group on port 3306 
+# Outbound: We allow all trafic out of our rds instance
 resource "aws_security_group" "security-group-rds" {
-  egress {
-  }
+  name        = "security_group_rds"
+  description = "Security group rules for rds"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.security-group-ec2.id]
   }
 }
 
+
+# Security group for our prometheus instance
+# Inbound: We allow traffic from ports 9090 and to 9090
+# Outbound: We allow all trafic out of our prometheus instance
 resource "aws_security_group" "security-group-prometheus" {
+  name        = "security_group_prometheus"
+  description = "Security group rules for prometheus instance"
+  vpc_id      = aws_vpc.main.id
+
   egress {
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = "-1"
   }
 
   ingress {
+    from_port   = 9090
+    to_port     = 9090
+    cidr_blocks = ["10.0.0.0/16"]
+    protocol    = "tcp"
   }
 }
-*/
+
 
 # Create application load balancer so we can spread traffic between our ec2 instances
 # We deploy alb in our public subnets
@@ -193,6 +224,10 @@ resource "aws_lb_target_group" "alb-target-group" {
   port     = 8080
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
+  
+  health_check {
+    # Bedzie dodane
+  }
 }
 
 # Create listener for alb

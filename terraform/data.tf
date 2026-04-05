@@ -18,8 +18,8 @@ data "aws_iam_policy_document" "ec2-assume_role" {
 
 data "aws_iam_policy_document" "ec2-role-polices" {
   statement {
-    effect  = "Allow"
-    actions = ["ssm:GetParameter", "ssm:GetParameters"]
+    effect    = "Allow"
+    actions   = ["ssm:GetParameter", "ssm:GetParameters"]
     resources = ["arn:aws:ssm:*:*:parameter/prod/*"]
   }
 }
