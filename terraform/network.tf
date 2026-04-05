@@ -202,6 +202,16 @@ resource "aws_security_group" "security-group-prometheus" {
 }
 
 
+resource "aws_db_subnet_group" "db-rds-subnet-group" {
+  name       = "db-rds-subnet-group"
+  subnet_ids = [aws_subnet.private-subnet[data.aws_availability_zones.available.names[0]].id, aws_subnet.private-subnet[data.aws_availability_zones.available.names[1]].id]
+
+  tags = {
+    Name = "RDS subnet group"
+  }
+}
+
+
 # Create application load balancer so we can spread traffic between our ec2 instances
 # We deploy alb in our public subnets
 # Also we enabled cross_zone_load_balancing which will result in more efficient traffic spreading
@@ -226,7 +236,13 @@ resource "aws_lb_target_group" "alb-target-group" {
   vpc_id   = aws_vpc.main.id
 
   health_check {
-    # Bedzie dodane
+    path                = "/health"
+    port                = "8080"
+    healthy_threshold   = 4
+    unhealthy_threshold = 2
+    timeout             = 5
+    interval            = 20
+    matcher             = "200"
   }
 }
 

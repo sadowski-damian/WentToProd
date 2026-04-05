@@ -23,3 +23,11 @@ data "aws_iam_policy_document" "ec2-role-polices" {
     resources = ["arn:aws:ssm:*:*:parameter/prod/*"]
   }
 }
+
+data "aws_iam_policy_document" "prometheus-ec2-discovery" {
+  statement {
+    effect    = "Allow"
+    actions   = ["ec2:DescribeInstances"]
+    resources = ["*"]
+  }
+}
