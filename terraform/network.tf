@@ -102,15 +102,28 @@ resource "aws_route_table_association" "private-route-table-association" {
   route_table_id = aws_route_table.private-subnets.id
 }
 
-/*
+
 # Configuration of different security groups for our app
+# Outbound of our EC2 instances - we allow for all outbound traffic
+# Inbound to - we allow traffic from port 8080 (in which our app runs) to the same port && security groups of lb and prometheus instance
 resource "aws_security_group" "security-group-ec2" {
+  name        = "security_group_ec2"
+  description = "Security group rules for ec2"
+  vpc_id      = aws_vpc.main.id
+  
   egress {
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = "-1"
   }
   ingress {
+    from_port = 8080
+    to_port = 8080
+    protocol = "tcp"
+    security_groups = [aws_security_group.security-group-lb.id, aws_security_group.security-group-prometheus.id]
   }
 }
-*/
 
 # Security group for load balancer
 # Inbound: We allow traffic from http (80) and https (443) from any cidr using tcp
