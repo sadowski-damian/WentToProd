@@ -25,7 +25,7 @@ jobs:
                 terraform_version: ${{ vars.TF_VERSION }}
                 cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
           
-          - name: Terraform initialization
+          - name: Terraform initialization 
             working-directory: ./terraform
             run: terraform init
           
