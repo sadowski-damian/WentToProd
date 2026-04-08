@@ -33,6 +33,7 @@ resource "aws_autoscaling_group" "main-asg" {
   min_size            = 1
   target_group_arns   = [aws_lb_target_group.alb-target-group.arn]
   health_check_type   = "ELB"
+  health_check_grace_period = 600
 
   launch_template {
     id      = aws_launch_template.ec2-launch-template.id
