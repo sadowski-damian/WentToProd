@@ -32,3 +32,4 @@ jobs:
           - name: Terraform destroy
             working-directory: ./terraform
             run: terraform destroy -auto-approve
+          # test
