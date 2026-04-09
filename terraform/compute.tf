@@ -27,12 +27,12 @@ resource "aws_launch_template" "ec2_launch_template" {
 
 # ASG
 resource "aws_autoscaling_group" "main_asg" {
-  vpc_zone_identifier = [for subnet in aws_subnet.private_subnet : subnet.id]
-  desired_capacity    = 1
-  max_size            = 2
-  min_size            = 1
-  target_group_arns   = [aws_lb_target_group.alb_target_group.arn]
-  health_check_type   = "ELB"
+  vpc_zone_identifier       = [for subnet in aws_subnet.private_subnet : subnet.id]
+  desired_capacity          = 1
+  max_size                  = 2
+  min_size                  = 1
+  target_group_arns         = [aws_lb_target_group.alb_target_group.arn]
+  health_check_type         = "ELB"
   health_check_grace_period = 600
 
   launch_template {
