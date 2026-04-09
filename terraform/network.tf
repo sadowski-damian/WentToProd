@@ -44,8 +44,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 
 # Creating Elastic IP for our future NAT Gateway use
 resource "aws_eip" "elastic_ip_nat_gateway" {
-  depends_on = [aws_internet_gateway.internet_gateway]
-  domain     = "vpc"
+  domain = "vpc"
 }
 
 # Creating a single NAT Gateway in a first public subnet so our private subnets have outbound internet connection
@@ -118,8 +117,8 @@ resource "aws_security_group" "security_group_ec2" {
     protocol    = "-1"
   }
   ingress {
-    from_port       = 8080
-    to_port         = 8080
+    from_port       = var.app_port
+    to_port         = var.app_port
     protocol        = "tcp"
     security_groups = [aws_security_group.security_group_lb.id, aws_security_group.security_group_prometheus.id]
   }
@@ -231,13 +230,13 @@ resource "aws_lb" "main_alb" {
 # Our app will listen on port 8080 also we use http because ALB handles TLS termination
 resource "aws_lb_target_group" "alb_target_group" {
   name     = "lb-target-group"
-  port     = 8080
+  port     = var.app_port
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
 
   health_check {
     path                = "/health"
-    port                = "8080"
+    port                = tostring(var.app_port)
     healthy_threshold   = 4
     unhealthy_threshold = 2
     timeout             = 5
