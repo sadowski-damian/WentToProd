@@ -4,7 +4,7 @@ data "aws_availability_zones" "available" {
 }
 
 # Policy document for our EC2 instances
-data "aws_iam_policy_document" "ec2-assume_role" {
+data "aws_iam_policy_document" "ec2_assume_role" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "ec2-assume_role" {
   }
 }
 
-data "aws_iam_policy_document" "ec2-role-polices" {
+data "aws_iam_policy_document" "ec2_role_polices" {
   statement {
     effect    = "Allow"
     actions   = ["ssm:GetParameter", "ssm:GetParameters"]
@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "ec2-role-polices" {
   }
 }
 
-data "aws_iam_policy_document" "prometheus-ec2-discovery" {
+data "aws_iam_policy_document" "prometheus_ec2_discovery" {
   statement {
     effect    = "Allow"
     actions   = ["ec2:DescribeInstances"]
