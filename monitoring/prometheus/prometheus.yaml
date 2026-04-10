@@ -6,4 +6,4 @@ scrape_configs:
         refresh_interval: 30s
         filters:
           - name: tag:Name
-            values: ["EC2-instance-ASG"]
+            values: ["EC2-app-instance-ASG"]
