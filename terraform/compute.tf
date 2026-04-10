@@ -15,12 +15,12 @@ resource "aws_launch_template" "ec2_launch_template" {
     security_groups             = [aws_security_group.security_group_ec2.id]
   }
 
-  user_data = filebase64("./UserDataScripts/userDataEC2.sh")
+  user_data = filebase64("./UserDataScripts/userDataAppEC2.sh")
 
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = "EC2-instance-ASG"
+      Name = "EC2-app-instance-ASG"
     }
   }
 }
@@ -28,8 +28,8 @@ resource "aws_launch_template" "ec2_launch_template" {
 # ASG
 resource "aws_autoscaling_group" "main_asg" {
   vpc_zone_identifier       = [for subnet in aws_subnet.private_subnet : subnet.id]
-  desired_capacity          = 1
-  max_size                  = 2
+  desired_capacity          = 2
+  max_size                  = 4
   min_size                  = 1
   target_group_arns         = [aws_lb_target_group.alb_target_group.arn]
   health_check_type         = "ELB"
@@ -55,15 +55,21 @@ resource "aws_autoscaling_group" "main_asg" {
 # }
 #
 
-resource "aws_instance" "ec2_prometheus_instance" {
+resource "aws_instance" "ec2_monitoring_instance" {
   ami                    = data.aws_ami.amazon_linux_2023.id
   instance_type          = "t3.micro"
   subnet_id              = aws_subnet.private_subnet[data.aws_availability_zones.available.names[0]].id
-  vpc_security_group_ids = [aws_security_group.security_group_prometheus.id]
-  user_data              = file("./UserDataScripts/userDataPrometheus.sh")
-  iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile_prometheus.name
+  vpc_security_group_ids = [aws_security_group.security_group_monitoring.id]
+  user_data_base64 = templatefile("./UserDataScripts/userDataMonitoringEC2.sh", {
+    prometheus_config          = file("../monitoring/prometheus/prometheus.yaml")
+    grafana_datasource         = file("../monitoring/grafana/provisioning/datasources/datasource.yaml")
+    grafana_dashboard_provider = file("../monitoring/grafana/provisioning/dashboards/dashboard.yaml")
+    docker_compose             = file("../monitoring/docker-compose.yaml")
+  })
+
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile_monitoring.name
 
   tags = {
-    Name = "ec2-prometheus-instance"
+    Name = "EC2-monitoring-instance"
   }
 }

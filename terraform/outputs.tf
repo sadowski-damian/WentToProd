@@ -8,8 +8,8 @@ output "vpc_id" {
   value       = aws_vpc.main.id
 }
 
-output "prometheus_private_ip" {
-  description = "Prometheus instance - private IP"
-  value       = aws_instance.ec2_prometheus_instance.private_ip
+output "monitoring_private_ip" {
+  description = "Monitoring instance - private IP"
+  value       = aws_instance.ec2_monitoring_instance.private_ip
 }
 

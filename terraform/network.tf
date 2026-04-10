@@ -104,7 +104,7 @@ resource "aws_route_table_association" "private_route_table_association" {
 
 # Configuration of different security groups for our app
 # Outbound of our EC2 instances - we allow for all outbound traffic
-# Inbound to - we allow traffic from port 8080 (in which our app runs) to the same port && security groups of lb and prometheus instance
+# Inbound to - we allow traffic from port 8080 (in which our app runs) to the same port && security groups of lb and monitoring instance
 resource "aws_security_group" "security_group_ec2" {
   name        = "security_group_ec2"
   description = "Security group rules for ec2"
@@ -120,14 +120,14 @@ resource "aws_security_group" "security_group_ec2" {
     from_port       = var.app_port
     to_port         = var.app_port
     protocol        = "tcp"
-    security_groups = [aws_security_group.security_group_lb.id, aws_security_group.security_group_prometheus.id]
+    security_groups = [aws_security_group.security_group_lb.id, aws_security_group.security_group_monitoring.id]
   }
 
   ingress {
     from_port       = 9100
     to_port         = 9100
     protocol        = "tcp"
-    security_groups = [aws_security_group.security_group_prometheus.id]
+    security_groups = [aws_security_group.security_group_monitoring.id]
   }
 }
 
@@ -177,12 +177,12 @@ resource "aws_security_group" "security_group_rds" {
 }
 
 
-# Security group for our prometheus instance
-# Inbound: We allow traffic from ports 9090 and to 9090
-# Outbound: We allow all trafic out of our prometheus instance
-resource "aws_security_group" "security_group_prometheus" {
-  name        = "security_group_prometheus"
-  description = "Security group rules for prometheus instance"
+# Security group for our monitoringinstance
+# Inbound: We allow traffic from ports 9090 and to 9090, and from grafana on port 3000 to port 3000
+# Outbound: We allow all trafic out of our monitoring instance
+resource "aws_security_group" "security_group_monitoring" {
+  name        = "security_group_monitoring"
+  description = "Security group rules for monitoring instance"
   vpc_id      = aws_vpc.main.id
 
   egress {
@@ -195,6 +195,13 @@ resource "aws_security_group" "security_group_prometheus" {
   ingress {
     from_port   = 9090
     to_port     = 9090
+    cidr_blocks = ["10.0.0.0/16"]
+    protocol    = "tcp"
+  }
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
     cidr_blocks = ["10.0.0.0/16"]
     protocol    = "tcp"
   }

@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "ec2_role_polices" {
   }
 }
 
-data "aws_iam_policy_document" "prometheus_ec2_discovery" {
+data "aws_iam_policy_document" "monitoring_ec2_discovery" {
   statement {
     effect    = "Allow"
     actions   = ["ec2:DescribeInstances"]

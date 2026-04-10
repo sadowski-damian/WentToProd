@@ -23,24 +23,24 @@ resource "aws_iam_role_policy_attachment" "ec2_role_policy_ssm" {
 }
 
 
-resource "aws_iam_role" "ec2_role_prometheus" {
-  name               = "ec2-role-prometheus"
+resource "aws_iam_role" "ec2_role_monitoring" {
+  name               = "ec2-role-monitoring"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
 }
 
-resource "aws_iam_instance_profile" "ec2_instance_profile_prometheus" {
-  name = "ec2-instance-profile-prometheus"
-  role = aws_iam_role.ec2_role_prometheus.name
+resource "aws_iam_instance_profile" "ec2_instance_profile_monitoring" {
+  name = "ec2-instance-profile-monitoring"
+  role = aws_iam_role.ec2_role_monitoring.name
 }
 
-resource "aws_iam_role_policy_attachment" "ec2_role_policy_prometheus" {
-  role       = aws_iam_role.ec2_role_prometheus.id
+resource "aws_iam_role_policy_attachment" "ec2_role_policy_monitoring" {
+  role       = aws_iam_role.ec2_role_monitoring.id
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-resource "aws_iam_role_policy" "prometheus_ec2_discovery" {
-  name   = "prometheus-ec2-discovery"
-  role   = aws_iam_role.ec2_role_prometheus.id
-  policy = data.aws_iam_policy_document.prometheus_ec2_discovery.json
+resource "aws_iam_role_policy" "monitoring_ec2_discovery" {
+  name   = "monitoring-ec2-discovery"
+  role   = aws_iam_role.ec2_role_monitoring.id
+  policy = data.aws_iam_policy_document.monitoring_ec2_discovery.json
 } 
