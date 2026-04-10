@@ -41,10 +41,13 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/app:latest
 
+      - name: Copy monitoring config
+        run: cp -r monitoring terraform/monitoring
+
       - name: Terraform initialization
-        working-directory: .
-        run: terraform -chdir=./terraform init
+        working-directory: ./terraform
+        run: terraform init
 
       - name: Terraform apply
-        working-directory: .
-        run: terraform -chdir=./terraform apply -auto-approve
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
