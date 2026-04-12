@@ -20,6 +20,7 @@ Infrastruktura zostala zaprojektowana z mysla o wysokiej dostepnosci (High Avail
 [![Diagram infrastruktury AWS](./docs/infra.png)](./docs/infra.png)
 
 ### Kluczowe zalozenia architektoniczne
+Projekt podzielony na 3 workspace w celu optymalizacji kosztow tworzenia
 * **Sieć (VPC)**: Bedzie opis
 * **Load Balancing (ALB)**: Bedzie opis
 * **Auto Scaling Group (ASG)**: Bedzie opis
