@@ -1,0 +1,28 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      # We store metrics in created volume so they live even after container restart 
+      - prometheus_data:/prometheus
+      # We mount file with prometheus configuration from host to the container 
+      - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      # Same as with prometheus 
+      - grafana_data:/var/lib/grafana
+      - /etc/grafana/provisioning:/etc/grafana/provisioning
+    # Prometheus has to be up before grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  grafana_data:
+  prometheus_data:

@@ -9,7 +9,7 @@ terraform {
   cloud {
     organization = "damian-sadowski-projekty"
     workspaces {
-      name = "wenttoprod-db"
+      name = "wenttoprod-infra"
     }
   }
 }
