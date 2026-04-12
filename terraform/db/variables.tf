@@ -14,3 +14,13 @@ variable "app_port" {
   description = "Port number for our .net app"
   default     = 8080
 }
+
+variable "db_username" {
+  type = string
+  sensitive = true
+}
+
+variable "db_password" {
+  type = string
+  sensitive = true
+}
