@@ -78,7 +78,7 @@ jobs:
     name: Terraform apply network
     runs-on: ubuntu-latest
     needs: terraform-network-plan
-    environment: network-apply
+    #environment: network-apply
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -100,11 +100,16 @@ jobs:
         working-directory: ./terraform/network
         run: terraform init
 
-      - name: Terraform plan and apply if changes
+      - name: Terraform plan
         working-directory: ./terraform/network
         id: plan_network
         run: |
-          terraform plan -detailed-exitcode
+          terraform plan -detailed-exitcode >> $GITHUB_ENV
+          
+      - name: Apply if changes
+        working-directory: ./terraform/network
+        id: plan_network
+        run: |
           if [ $? -eq 2 ]; then
           terraform apply -auto-approve
           fi
