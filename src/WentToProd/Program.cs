@@ -51,13 +51,13 @@ app.MapGet("/", async () =>
             <meta charset='utf-8'>
             <title>WentToProd</title>
             <style>
-                body {{ font-family: Arial, sans-serif; background: #1e1e2e; color: #cdd6f4; margin: 0; padding: 40px; }}
-                h1 {{ color: #a6e3a1; }}
-                table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
-                th {{ background: #313244; padding: 12px; text-align: left; color: #89b4fa; }}
-                td {{ padding: 10px 12px; border-bottom: 1px solid #313244; }}
-                tr:hover td {{ background: #252535; }}
-                code {{ background: #313244; padding: 2px 6px; border-radius: 4px; color: #f38ba8; }}
+                body { font-family: Arial, sans-serif; background: #1e1e2e; color: #cdd6f4; margin: 0; padding: 40px; }
+                h1 { color: #a6e3a1; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th { background: #313244; padding: 12px; text-align: left; color: #89b4fa; }
+                td { padding: 10px 12px; border-bottom: 1px solid #313244; }
+                tr:hover td { background: #252535; }
+                code { background: #313244; padding: 2px 6px; border-radius: 4px; color: #f38ba8; }
             </style>
         </head>
         <body>
@@ -73,7 +73,7 @@ app.MapGet("/", async () =>
                     </tr>
                 </thead>
                 <tbody>
-                    {tableRows}
+                    {{{tableRows}}}
                 </tbody>
             </table>
         </body>
