@@ -396,7 +396,15 @@ jobs:
 
       - name: Wait for instances
         if: needs.terraform-apply-infra.result == 'success'
-        run: sleep 120
+        run: |
+          ALB_DNS=$(terraform -chdir=./terraform/infra output -raw alb_dns_name)
+          for ((i=0; i<20; i++)); do                                                                                                                                     
+            curl -sf "http://$ALB_DNS/health" && break
+            echo "Attempt $i/20, retrying in 15s..."                                                                                                                     
+            sleep 15                                                                                                                                                     
+          done
+          curl -sf "http://$ALB_DNS/health" || exit 1
+
         
       - name: Register Deployment in DB
         run: |
