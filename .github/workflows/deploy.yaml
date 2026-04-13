@@ -100,15 +100,15 @@ jobs:
         working-directory: ./terraform/network
         run: terraform init
 
-      - name: Terraform plan with output
+      - name: Terraform plan and apply if changes
         working-directory: ./terraform/network
         id: plan_network
-        run: terraform plan -out=tfplanNETWORK
+        run: |
+          terraform plan -detailed-exitcode
+          if [ $? -eq 2 ]; then
+          terraform apply -auto-approve
+          fi
 
-      - name: Terraform apply
-        working-directory: ./terraform/network
-        run: terraform apply -auto-approve tfplanNETWORK
-        
   terraform-db-plan:
     name: Terraform plan db
     runs-on: ubuntu-latest
@@ -176,11 +176,12 @@ jobs:
       - name: Terraform plan with output
         working-directory: ./terraform/db
         id: plan_db
-        run: terraform plan -out=tfplanDB
+        run: |
+          terraform plan -detailed-exitcode
+          if [ $? -eq 2 ]; then
+          terraform apply -auto-approve
+          fi
 
-      - name: Terraform apply
-        working-directory: ./terraform/db
-        run: terraform apply -auto-approve tfplanDB
 
   terraform-infra-plan:
     name: Terraform plan infra
@@ -249,11 +250,11 @@ jobs:
       - name: Terraform plan with output
         working-directory: ./terraform/infra
         id: plan_infra
-        run: terraform plan -out=tfplanINFRA
-
-      - name: Terraform apply
-        working-directory: ./terraform/infra
-        run: terraform apply -auto-approve tfplanINFRA
+        run: |
+          terraform plan -detailed-exitcode
+          if [ $? -eq 2 ]; then
+          terraform apply -auto-approve
+          fi
   
   write-to-db:
     name: Register deploy in DB
