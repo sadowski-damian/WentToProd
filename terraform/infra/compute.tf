@@ -52,6 +52,7 @@ resource "aws_instance" "ec2_monitoring_instance" {
     grafana_datasource         = file("./monitoring/grafana/provisioning/datasources/datasource.yaml")
     grafana_dashboard_provider = file("./monitoring/grafana/provisioning/dashboards/dashboard.yaml")
     docker_compose             = file("./monitoring/monitoring-compose.yaml")
+    grafana_dashboard          = file("./monitoring/grafana/dashboards/node-exporter.json")
   }))
 
   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile_monitoring.name
