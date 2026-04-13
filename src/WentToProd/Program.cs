@@ -44,7 +44,7 @@ app.MapGet("/", async () =>
     """));
 
     // Whole html document 
-    var html = $"""
+    var html = $$$"""
         <!DOCTYPE html>
         <html>
         <head>
