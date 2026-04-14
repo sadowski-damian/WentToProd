@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     outputs:
-      exit-code: ${{ steps.network-plan.outputs.exit-code }}
+      exit-code-network: ${{ steps.network-plan.outputs.exit-code }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -95,7 +95,7 @@ jobs:
   terraform-network-apply:
     name: Terraform apply network
     runs-on: ubuntu-latest
-    if: ${{ needs.terraform-network-plan.outputs.exit-code == 2 }}
+    if: ${{ needs.terraform-network-plan.outputs.exit-code-network == 2 }}
     needs: terraform-network-plan
     steps:
       - name: Checkout Repo
@@ -125,7 +125,9 @@ jobs:
   terraform-db-plan:
     name: Terraform plan db
     runs-on: ubuntu-latest
-    if: ${{ needs.terraform-network-apply.result == 'success' || needs.terraform-network-apply.result == 'skipped' }} 
+    if: ${{ needs.terraform-network-apply.result == 'success' || needs.terraform-network-apply.result == 'skipped' }}
+    outputs:
+      exit-code-db: ${{ steps.db-plan.outputs.exit-code }}
     needs: terraform-network-apply
     steps:
       - name: Checkout Repo
@@ -158,11 +160,28 @@ jobs:
 
       - name: Terraform plan
         working-directory: ./terraform/db
-        run: terraform plan
+        id: db-plan
+        run: |
+          set +e
+          terraform plan -detailed-exitcode -input=false -out=tfplan
+          exit_code=$?
+          echo "exit-code=$exit_code" >> "$GITHUB_OUTPUT"
+          set -e
+          if [ $exit_code -eq 2 ]; then
+            echo "There are pending changes."
+            exit 0
+          elif [ $exit_code -eq 0 ]; then
+            echo "No changes detected in the Terraform plan."
+            exit 0
+          else
+            echo "Terraform plan failed."
+            exit 1
+          fi
 
   terraform-db-apply:
     name: Terraform apply db
     runs-on: ubuntu-latest
+    if: ${{ needs.terraform-db-plan.outputs.exit-code-db == 2 }}
     needs: terraform-db-plan
     environment: db-apply
     steps:
@@ -194,6 +213,8 @@ jobs:
     name: Terraform plan infra
     runs-on: ubuntu-latest
     needs: terraform-network-apply
+    outputs:
+      exit-code-infra: ${{ steps.infra-plan.outputs.exit-code }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -225,11 +246,28 @@ jobs:
 
       - name: Terraform plan
         working-directory: ./terraform/infra
-        run: terraform plan
+        id: infra-plan
+        run: |
+          set +e
+          terraform plan -detailed-exitcode -input=false -out=tfplan
+          exit_code=$?
+          echo "exit-code=$exit_code" >> "$GITHUB_OUTPUT"
+          set -e
+          if [ $exit_code -eq 2 ]; then
+          echo "There are pending changes."
+          exit 0
+          elif [ $exit_code -eq 0 ]; then
+          echo "No changes detected in the Terraform plan."
+          exit 0
+          else
+          echo "Terraform plan failed."
+          exit 1
+          fi
 
   terraform-infra-apply:
     name: Terraform apply infra
     runs-on: ubuntu-latest
+    if: ${{ needs.terraform-infra-plan.outputs.exit-code-infra == 2 }}
     needs: terraform-infra-plan
     environment: infra-apply
     steps:
@@ -260,6 +298,10 @@ jobs:
   instance-refresh:
     name: Instance refresh
     runs-on: ubuntu-latest
+    if: |
+      (needs.terraform-infra-apply.result == 'success' || needs.terraform-infra-apply.result == 'skipped') &&
+      (needs.terraform-db-apply.result == 'success' || needs.terraform-db-apply.result == 'skipped') &&      
+      (needs.terraform-network-apply.result == 'success' || needs.terraform-network-apply.result == 'skipped') 
     needs: [terraform-network-apply, terraform-db-apply, terraform-infra-apply]
     steps:
       - name: Checkout Repo
