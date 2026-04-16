@@ -11,6 +11,7 @@ resource "aws_db_instance" "rds_db_instance" {
   skip_final_snapshot    = true
   storage_encrypted      = true
   publicly_accessible    = false
+  multi_az               = true
   db_subnet_group_name   = data.terraform_remote_state.network.outputs.subnet_group_id
   vpc_security_group_ids = [data.terraform_remote_state.network.outputs.rds_security_group]
 }
