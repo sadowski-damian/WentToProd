@@ -1,37 +1,68 @@
-# Creating Elastic IP for our future NAT Gateway use
-resource "aws_eip" "elastic_ip_nat_gateway" {
+# Creating Elastic IPs for our Both NAT gateways
+resource "aws_eip" "elastic_ip_nat_gateway-first" {
   domain = "vpc"
 }
 
-# Creating a single NAT Gateway in a first public subnet so our private subnets have outbound internet connection
-resource "aws_nat_gateway" "nat_gateway" {
+resource "aws_eip" "elastic_ip_nat_gateway-second" {
+  domain = "vpc"
+}
+
+
+# Creating a NAT Gateway in a both public subnets so our private subnets have outbound internet connection
+resource "aws_nat_gateway" "nat_gateway_first" {
   subnet_id     = data.terraform_remote_state.network.outputs.first_public_subnet_id
-  allocation_id = aws_eip.elastic_ip_nat_gateway.id
+  allocation_id = aws_eip.elastic_ip_nat_gateway-first.id
 
   tags = {
-    Name = "nat-gateway"
+    Name = "nat-gateway-first"
   }
 }
 
-# Creating route table for private subnets forwarding to NAT Gateway
-resource "aws_route_table" "private_subnets" {
+resource "aws_nat_gateway" "nat_gateway_second" {
+  subnet_id     = data.terraform_remote_state.network.outputs.second_public_subnet_id
+  allocation_id = aws_eip.elastic_ip_nat_gateway-second.id
+
+  tags = {
+    Name = "nat-gateway-second"
+  }
+}
+
+# Creating route table for private subnets forwarding to dedicated NAT Gateways
+resource "aws_route_table" "first_private_subnet" {
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway.id
+    nat_gateway_id = aws_nat_gateway.nat_gateway_first.id
   }
 
   tags = {
-    Name = "private-subnets-route-table"
+    Name = "first-private-subnet-route-table"
   }
 }
 
-# Creating association between private subnets and our private - route table
-resource "aws_route_table_association" "private_route_table_association" {
-  for_each       = toset([data.terraform_remote_state.network.outputs.first_private_subnet_id, data.terraform_remote_state.network.outputs.second_private_subnet_id])
-  subnet_id      = each.value
-  route_table_id = aws_route_table.private_subnets.id
+resource "aws_route_table" "second_private_subnet" {
+  vpc_id = data.terraform_remote_state.network.outputs.vpc_id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gateway_second.id
+  }
+
+  tags = {
+    Name = "second-private-subnet-route-table"
+  }
+}
+
+# Creating association between private subnets and our private route tables
+resource "aws_route_table_association" "first_private_route_table_association" {
+  subnet_id      = data.terraform_remote_state.network.outputs.first_private_subnet_id
+  route_table_id = aws_route_table.first_private_subnet.id
+}
+
+resource "aws_route_table_association" "second_private_route_table_association" {
+  subnet_id      = data.terraform_remote_state.network.outputs.second_private_subnet_id
+  route_table_id = aws_route_table.second_private_subnet.id
 }
 
 # Create application load balancer so we can spread traffic between our ec2 instances
