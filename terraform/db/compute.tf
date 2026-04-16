@@ -1,19 +1,21 @@
 # Create RDS Postgres instance, we pass subnet group name and security groups using remote state (network workspace)
 resource "aws_db_instance" "rds_db_instance" {
-  allocated_storage      = 10
-  db_name                = "wenttoprod"
-  engine                 = "postgres"
-  engine_version         = "16"
-  instance_class         = "db.t3.micro"
-  username               = var.db_username
-  password               = var.db_password
-  parameter_group_name   = "default.postgres16"
-  skip_final_snapshot    = true
-  storage_encrypted      = true
-  publicly_accessible    = false
-  multi_az               = true
-  db_subnet_group_name   = data.terraform_remote_state.network.outputs.subnet_group_id
-  vpc_security_group_ids = [data.terraform_remote_state.network.outputs.rds_security_group]
+  allocated_storage         = 10
+  db_name                   = "wenttoprod"
+  engine                    = "postgres"
+  engine_version            = "16"
+  instance_class            = "db.t3.micro"
+  username                  = var.db_username
+  password                  = var.db_password
+  parameter_group_name      = "default.postgres16"
+  backup_retention_period   = 7
+  skip_final_snapshot       = false
+  final_snapshot_identifier = "wenttoprod-final-snapshot"
+  storage_encrypted         = true
+  publicly_accessible       = false
+  multi_az                  = true
+  db_subnet_group_name      = data.terraform_remote_state.network.outputs.subnet_group_id
+  vpc_security_group_ids    = [data.terraform_remote_state.network.outputs.rds_security_group]
 }
 
 # Add SSM parameter - /prod/db-connection-string, username and password passed from HCP variables
