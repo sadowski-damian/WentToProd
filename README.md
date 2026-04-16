@@ -112,4 +112,4 @@ Instancja monitoringu (EC2 w prywatnej podsieci) uruchamia Prometheus i Grafana 
 
 Warstwa **infra** jest niszczona automatycznie codziennie o **22:30 UTC** przez **destroy.yaml**. Można też uruchomić ręcznie przez **workflow_dispatch**.
 
-Warstwy **network** i **db** pozostają.
+Warstwy **network** i **db** pozostaja.
