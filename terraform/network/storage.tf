@@ -1,7 +1,7 @@
 # encryption configured
 #tfsec:ignore:aws-s3-enable-bucket-encryption
 resource "aws_s3_bucket" "monitoring_config" {
-  bucket        = "wenttoprod-monitoring-config"
+  bucket = "wenttoprod-monitoring-config"
 }
 
 # AES256 is enough
