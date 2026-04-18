@@ -251,6 +251,7 @@ resource "aws_guardduty_detector" "main" {
 resource "aws_kms_key" "cloudtrail" {
   description             = "KMS key for CloudTrail"
   deletion_window_in_days = 7
+  enable_key_rotation     = true
 }
 
 resource "aws_kms_key_policy" "cloudtrail" {
@@ -285,7 +286,7 @@ resource "aws_cloudtrail" "main" {
   s3_bucket_name                = aws_s3_bucket.monitoring_config.id
   s3_key_prefix                 = "cloudtrail"
   include_global_service_events = true
-  is_multi_region_trail         = false
+  is_multi_region_trail         = true
   enable_log_file_validation    = true
   kms_key_id                    = aws_kms_key.cloudtrail.arn
 }

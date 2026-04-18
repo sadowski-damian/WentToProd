@@ -14,10 +14,10 @@ sudo mkdir -p /usr/local/lib/docker/cli-plugins
 sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
 sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
-# Creat /etc/prometheus dir as we will be using it to pass our prometheus conf
+# Create /etc/prometheus dir as we will be using it to pass our prometheus conf
 sudo mkdir -p /etc/prometheus
 
-# tee writes content to file, > /dev/null makes it so we doesnt get output in the terminal
+# tee writes content to file, > /dev/null makes it so we don't get output in the terminal
 sudo tee /etc/prometheus/prometheus.yml > /dev/null << 'EOF'
 ${prometheus_config}
 EOF
