@@ -29,7 +29,7 @@ co pozwala niszczyć kosztowne zasoby i pozostawiać te, które nie generują ko
 Infrastruktura z workspace `infra` jest **automatycznie niszczona codziennie o 22:30 UTC** — workspace `network` oraz `db` pozostają.
 Takie rozwiązanie pozwala zminimalizować koszty, jednocześnie zapewniając szybkie wdrożenie aplikacji.
 
-![Diagram Architektury AWS](./docs/infra.png)
+![Diagram Architektury AWS](./docs/infra.svg)
 
 ---
 
