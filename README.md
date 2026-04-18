@@ -67,6 +67,7 @@ Każdy push do `main` zmieniający pliki w `/src` uruchamia automatycznie:
 </p>
 
 Każdy błąd na dowolnym etapie → powiadomienie na Slack.
+
 ---
 
 ## Bezpieczeństwo
