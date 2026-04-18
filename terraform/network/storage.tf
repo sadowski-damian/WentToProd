@@ -16,6 +16,14 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "s3_encryption" {
   }
 }
 
+resource "aws_s3_bucket_versioning" "monitoring_config" {
+  bucket = aws_s3_bucket.monitoring_config.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 resource "aws_s3_bucket_public_access_block" "monitoring_config" {
   bucket = aws_s3_bucket.monitoring_config.id
 
