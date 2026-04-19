@@ -1,3 +1,4 @@
+# This locals block stores information about CIDR ranges used in public and private subnets across 2AZs that are fetched from data block
 locals {
   public_subnets = {
     (data.aws_availability_zones.available.names[0]) = "10.0.1.0/24"
